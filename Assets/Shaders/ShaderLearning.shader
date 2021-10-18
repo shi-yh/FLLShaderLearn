@@ -14,11 +14,15 @@ Shader "Custom/ShaderLearning"
 		Tags{
 		
 			"PreviewType" = "Plane"
-		
+			"Queue" = "Transparent"
 		}
 
 		Pass{
 			
+			///将源颜色乘上源颜色的透明度，与目标颜色乘（1 - 原颜色的透明度）的结果相加
+			///OutColor = SrcColor * ScrAlpha + DstColor * (1 - SrcAlpha)
+			Blend SrcAlpha OneMinusSrcAlpha
+
 			CGPROGRAM
 
 			#pragma vertex vert
@@ -54,8 +58,8 @@ Shader "Custom/ShaderLearning"
 
 			float4 frag(v2f i):SV_TARGET{
 			
-				float4 color=float4(i.uv.r,i.uv.g,1,1);
-				return color;
+				
+				return tex2D(_MainTex,i.uv);
 				
 			}
 
