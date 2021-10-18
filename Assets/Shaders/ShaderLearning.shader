@@ -43,7 +43,7 @@ Shader "Custom/ShaderLearning"
 			struct v2f{
 			
 				float4 vertex:SV_POSITION;
-				float2 uv:TEXCOORD0;
+				float2 uv:TEXCOORD1;
 			};
 
 			v2f vert(appdata v){
@@ -56,11 +56,14 @@ Shader "Custom/ShaderLearning"
 			}
 
 
-			float4 frag(v2f i):SV_TARGET{
+			float4 frag(v2f i):SV_TARGET
+			{
 			
-				
-				return tex2D(_MainTex,i.uv);
-				
+				//float4 color = tex2D(_MainTex, i.uv);
+				//color *= float4(i.uv.r, i.uv.g, 0, 1);
+				//return color;
+				float4 color = float4(i.uv.r,i.uv.g, 0, 1);
+				return color;
 			}
 
 
