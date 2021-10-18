@@ -59,11 +59,11 @@ Shader "Custom/ShaderLearning"
 			float4 frag(v2f i):SV_TARGET
 			{
 			
-				//float4 color = tex2D(_MainTex, i.uv);
-				//color *= float4(i.uv.r, i.uv.g, 0, 1);
-				//return color;
-				float4 color = float4(i.uv.r,i.uv.g, 0, 1);
+				float4 color = tex2D(_MainTex, i.uv);
+				color *= float4(i.uv.r, i.uv.g, 0, 1);
 				return color;
+				//float4 color = float4(i.uv.r,i.uv.g, 0, 1);
+				//return color;
 			}
 
 
