@@ -110,6 +110,36 @@ Shader "Custom/ShaderLearning"
 				return lerp(color,subColor,_Tween);
 			}
 
+			
+			///重复图像
+			float4 repeatTex(v2f i){
+				
+			
+				float4 color = tex2D(_MainTex,i.uv[0]*2);
+
+				return color;
+			}
+
+			///灰化
+			float4 Gray(v2f i){
+			
+				float4 color = tex2D(_MainTex,i.uv[0]);
+
+				float grayValue=0.2125*color.r+0.07154*color.g+0.0721*color.b;
+			
+				return float4(grayValue,grayValue,grayValue,color.a);
+			}
+
+			///灰化再乘
+			float4 GrayMul(v2f i){
+			
+				float4 color = tex2D(_MainTex,i.uv[0]);
+
+				float grayValue=0.2125*color.r+0.07154*color.g+0.0721*color.b;
+			
+				return float4(grayValue,grayValue,grayValue,color.a)*_Color;
+			}
+
 
 			v2f vert(appdata v){
 			
@@ -126,7 +156,7 @@ Shader "Custom/ShaderLearning"
 			float4 frag(v2f i):SV_TARGET
 			{
 				
-				float4 color = mulUVColor(i);
+				float4 color = GrayMul(i);
 
 				return color;
 			}
