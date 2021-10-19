@@ -6,8 +6,13 @@ Shader "Custom/ShaderLearning"
 	Properties{
 		
 			_MainTex("Main Texture",2D) = "white"{}
+			_SubTex("Main Texture",2D) = "white"{}
 			_DisplacementTex("Displacement Texture",2D) = "white"{}
 			_Magnitude("Magnitude",Range(0,1))=0
+			_Color("Color Tint",Color)=(0,0,0,0)
+			_Tween("Tween",Range(0,1))=0
+
+
 		}
 
 	SubShader{
@@ -32,9 +37,16 @@ Shader "Custom/ShaderLearning"
 			#include "UnityCG.cginc"
 
 			sampler2D _MainTex;
+			sampler2D _SubTex;
 			sampler2D _DisplacementTex;
 			float _Magnitude;
+			fixed4 _Color;
+			float _Tween;
 
+
+
+			float4 _MainTex_ST;
+			float4 _SubTex_ST;
 
 			struct appdata{
 				
@@ -45,22 +57,14 @@ Shader "Custom/ShaderLearning"
 			struct v2f{
 			
 				float4 vertex:SV_POSITION;
-				float2 uv:TEXCOORD1;
+				float2 uv[2]:TEXCOORD0;
 			};
 
-			v2f vert(appdata v){
-			
-				v2f o;
-				o.vertex = UnityObjectToClipPos(v.vertex);
-				o.uv = v.uv;
-				return o;
-			
-			}
 
-
-			float4 frag(v2f i):SV_TARGET
-			{
-				float2 distuv = float2(i.uv.x*_Time.x*2,i.uv.y+_Time.x*2);
+			///扭曲效果
+			float4 distortion(v2f i){
+				
+				float2 distuv = float2(i.uv[0].x*_Time.x*2,i.uv[0].y+_Time.x*2);
 
 				///定义了一个float2的disp来对位移图进行采样
 				float2 disp = tex2D(_DisplacementTex, distuv).xy;				
@@ -71,10 +75,64 @@ Shader "Custom/ShaderLearning"
 				///并乘上magnitude让我们可以控制强度
 				disp = ((disp * 2) - 1) * _Magnitude;
 				///uv偏移
-				float4 color = tex2D(_MainTex, i.uv + disp);
+				float4 color = tex2D(_MainTex, i.uv[0] + disp);
+				
+				return color;
+			}
+
+
+			///颜色叠加
+			float4 mulColor(v2f i){
+			
+				float4 color=tex2D(_MainTex,i.uv[0]);
+
+				color *= _Color;
 
 				return color;
 			}
+
+			///根据uv叠加
+			float4 mulUVColor(v2f i){
+			
+				float4 color=tex2D(_MainTex,i.uv[0]);
+				color *= float4(i.uv[0].r,i.uv[0].g,0,1);
+				return color;
+			}
+
+			///混合图像
+			float4 tweenTex2d(v2f i){
+			
+				float4 color = tex2D(_MainTex,i.uv[0]);
+
+				float4 subColor=tex2D(_SubTex,i.uv[1]);
+				
+
+				return lerp(color,subColor,_Tween);
+			}
+
+
+			v2f vert(appdata v){
+			
+				v2f o;
+				o.vertex = UnityObjectToClipPos(v.vertex);
+				o.uv[0] = TRANSFORM_TEX(v.uv,_MainTex);
+				o.uv[1] = TRANSFORM_TEX(v.uv,_SubTex);
+				return o;
+			
+			}
+
+
+
+			float4 frag(v2f i):SV_TARGET
+			{
+				
+				float4 color = mulUVColor(i);
+
+				return color;
+			}
+
+
+			
 
 
 			ENDCG
