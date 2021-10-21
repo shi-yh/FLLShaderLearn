@@ -9,9 +9,16 @@ public class ReplacementShaderEffect : MonoBehaviour
 
     public Color color;
 
+    public Texture _MainTex;
+
+    public Texture _SecondTex;
+
+
     private void OnValidate()
     {
         Shader.SetGlobalColor("_OverDrawColor", color);
+        Shader.SetGlobalTexture("_MainTex2", _MainTex);
+        Shader.SetGlobalTexture("_SecondTex2", _SecondTex);
     }
 
     private void OnEnable()
@@ -19,7 +26,7 @@ public class ReplacementShaderEffect : MonoBehaviour
         if (replaceShader!=null)
         {
             ///留空会直接使用shader中找到的第一个subshader
-            GetComponent<Camera>().SetReplacementShader(replaceShader, "");
+            GetComponent<Camera>().SetReplacementShader(replaceShader, "RenderType");
         }
     }
 

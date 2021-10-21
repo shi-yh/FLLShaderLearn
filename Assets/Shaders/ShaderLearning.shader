@@ -64,7 +64,7 @@ Shader "Custom/ShaderLearning"
 			///扭曲效果
 			float4 distortion(v2f i){
 				
-				float2 distuv = float2(i.uv[0].x*_Time.x*2,i.uv[0].y+_Time.x*2);
+				float2 distuv = float2(i.uv[0].x+_Time.x*2,i.uv[0].y+_Time.x*2);
 
 				///定义了一个float2的disp来对位移图进行采样
 				float2 disp = tex2D(_DisplacementTex, distuv).xy;				
@@ -140,6 +140,22 @@ Shader "Custom/ShaderLearning"
 				return float4(grayValue,grayValue,grayValue,color.a)*_Color;
 			}
 
+			///反色处理
+			float4 AntiColor(v2f i){
+			
+				float4 color= tex2D(_MainTex,i.uv[0]);
+
+				float4 res=float4(1,1,1,color.a);
+
+				res.xyz-=color.xyz;
+
+				return res;
+			
+			
+			
+			}
+
+
 
 			v2f vert(appdata v){
 			
@@ -156,7 +172,7 @@ Shader "Custom/ShaderLearning"
 			float4 frag(v2f i):SV_TARGET
 			{
 				
-				float4 color = GrayMul(i);
+				float4 color = AntiColor(i);
 
 				return color;
 			}
