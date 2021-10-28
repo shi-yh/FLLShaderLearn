@@ -55,6 +55,8 @@ Shader "MyShader/XRay"
             CGPROGRAM  
             #pragma vertex vert  
             #pragma fragment frag  
+            #include <UnityShaderUtilities.cginc>
+            
             sampler2D _MainTex;  
             float4 _MainTex_ST;
             struct appdata {
@@ -68,7 +70,7 @@ Shader "MyShader/XRay"
             v2f vert (appdata v) 
             {
                 v2f o;  
-                o.pos = UnityObjectToClipPos(v.vertex);  
+                o.pos = UnityObjectToClipPos(v.vertex);
                 o.uv = v.texcoord;  
                 return o;  
             } 
