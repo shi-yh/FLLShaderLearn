@@ -17,7 +17,8 @@ Shader "CRLuo/RamColor"
     {
         Tags { "RenderType"="Opaque" }
         LOD 100
-
+        
+        
         Pass
         {
             CGPROGRAM
@@ -92,6 +93,7 @@ Shader "CRLuo/RamColor"
 
                 col = Tex_RamColor(col);
                 // apply fog
+                
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
