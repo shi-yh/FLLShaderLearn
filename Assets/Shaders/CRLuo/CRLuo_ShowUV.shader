@@ -9,14 +9,21 @@ Shader "CRLuo/CRLuo_ShowUV"
         _MoveSpeed_U("U向移动速度",Range(-10,10)) = 0
         _MoveSpeed_V("V向移动速度",Range(-10,10)) = 0
         
+        _UVRampTex("渐变贴图",2D) = "white"{}
+        
+        _AddPow("顶端火焰范围",Range(1,50)) = 40
+        _MultiplyPow("底端消失范围",Range(0,1))=0.3
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "RenderType"="Transparent" 
+                "Queue" = "Transparent"
+            }
         LOD 100
 
         Pass
         {
+            Blend One One
             Cull Off
             CGPROGRAM
             #pragma vertex vert
@@ -47,8 +54,10 @@ Shader "CRLuo/CRLuo_ShowUV"
             float _MoveSpeed_U;
             float _MoveSpeed_V;
             
-            
-            
+            sampler2D _UVRampTex;
+
+            float _AddPow;
+            float _MultiplyPow;
 
             v2f vert (appdata v)
             {
@@ -61,6 +70,46 @@ Shader "CRLuo/CRLuo_ShowUV"
                 return o;
             }
 
+            
+            /**
+             * \brief 使用贴图的方式完成喷射渐变
+             * \param col 原始颜色 
+             * \param i 片源着色器元数据
+             * \return RETURN 最终颜色
+             */
+            fixed4 AnamorphismByMask(fixed4 col,v2f i)
+            {
+                 fixed4 ramp=tex2D(_UVRampTex,i.uv);
+
+                //颜色叠加透明，让拉丝效果更加明显
+                col.rgb*=col.a;
+                //用白色渐变少的贴图，提亮贴图的上半部分
+                col.rgb+=ramp.b;
+                //用白色渐变多的贴图，压暗贴图的上半部分
+                col.rgb*=ramp.g;
+
+                return col;
+            }
+
+            
+            /**
+             * \brief 使用数学方法完成喷射渐变
+             * \param col 原始颜色
+             * \param i 着色器数据
+             * \return col
+             */
+            fixed4 AnamorphismByMath(fixed4 col,v2f i)
+            {
+                /// 越靠下，y越小，pow总值越小，黑色越多，越不影响
+                col += pow(i.uv.y,_AddPow)*_AddPow;
+
+                ///越靠下，y越小，pow总值越大，影响越大
+                col *= pow(i.uv.y,_MultiplyPow);
+
+                return col;
+            }
+            
+
             fixed4 frag (v2f i) : SV_Target
             {
                 //组织二维的UV偏移坐标*时间变量
@@ -69,7 +118,11 @@ Shader "CRLuo/CRLuo_ShowUV"
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, i.uv+uvOffset);
 
-                clip(col.r-0.1);
+
+               col=AnamorphismByMath(col,i);
+
+                
+                clip(col.r-0.5);
 
                 col*=_Color;
                 // apply fog
