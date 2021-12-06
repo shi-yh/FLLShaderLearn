@@ -1,3 +1,4 @@
+///卡通照明和半透明效果
 Shader "CRLuo/Ramp_Cartoonlighting"
 {
     Properties
@@ -100,18 +101,13 @@ Shader "CRLuo/Ramp_Cartoonlighting"
                           
             }
 
-            fixed4 RampColorTry(float _ramp)
-            {
-
-                fixed _ramp_Max = saturate(_ramp);
-
-                fixed _ramp_Min = saturate(-_ramp);
-
-                //0~1作为红色输出，0~-1作为蓝色输出
-                return fixed4(_ramp_Max,0,_ramp_Min,1);
-                
-            }
-
+            
+            /**
+             * \brief 贴图混合光照
+             * \param col 无光照颜色
+             * \param ramp 强度
+             * \return RETURN 实际颜色
+             */
             fixed4 ColorByRampTex(fixed4 col,half ramp)
             {
                 

@@ -1,3 +1,4 @@
+///Mask通道着色
 Shader "CRLuo/CRLuo_MaskColor"
 {
     Properties

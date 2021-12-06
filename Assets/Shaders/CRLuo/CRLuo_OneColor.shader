@@ -1,3 +1,4 @@
+///灰度上色
 Shader "CRLuo/CRLuo_OneColor"
 {
     Properties

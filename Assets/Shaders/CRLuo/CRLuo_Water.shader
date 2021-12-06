@@ -1,10 +1,15 @@
-///灰化
-Shader "CRLuo/CRLuo_Gray"
+Shader "CRLuo/CRLuo_Water"
 {
     Properties
     {
+        _Color("颜色",Color) = (1,1,1,1)
+        
         _MainTex ("Texture", 2D) = "white" {}
-        _GrayEffect("GrayPower",Range(0,1))=0.5
+        
+        _UVAmin("xy水贴图动画速度，zw扭曲贴图动画速度",Vector)=(0,0,0,0)
+        
+        _DisplacePow("扭曲强度",Range(-1,1))=0.5
+        
     }
     SubShader
     {
@@ -36,29 +41,12 @@ Shader "CRLuo/CRLuo_Gray"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed _GrayEffect;
 
-            
-             /**
-             * \brief 最简单的灰化，但是由于RGB不同通道颜色的亮度权重不同，会略暗于ps的去色
-             * \param col 灰化前颜色 
-             * \return 灰化后颜色
-             */
-            fixed4 SimpleGray(fixed4 col)
-            {
-                col.rgb=((col.r+col.g+col.b)/3);
-                return col;
-            }
-
-            fixed4 Gray(fixed4 col)
-            {
-                float gray=dot(col.rgb,float3(0.299,0.587,0.114));
-                col.rgb=gray;
-                return col;
-            }
+            float4 _Color;
+            float4 _UVAmin;
+            float _DisplacePow;
             
 
-            
             v2f vert (appdata v)
             {
                 v2f o;
@@ -70,22 +58,23 @@ Shader "CRLuo/CRLuo_Gray"
 
             fixed4 frag (v2f i) : SV_Target
             {
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, i.uv);
+                //获取置换贴图，添加UV动画，并且只输出蓝绿扭曲噪波通道
+                fixed2 displaceTex = tex2D(_MainTex,i.uv+_UVAmin.zw*_Time.x).gb;
 
-                fixed4 gray=Gray(col);
+                displaceTex-=0.5;
 
-                col=lerp(col,gray,_GrayEffect);
+                displaceTex*=_DisplacePow;
+                
+                
+                // 用置换贴图的红绿通道啦影响UV坐标，只输出红色水面通道
+                fixed4 col = tex2D(_MainTex, i.uv+_UVAmin.xy*_Time.x+displaceTex).r;
+
+                col*=_Color*2;
                 
                 // apply fog
                 UNITY_APPLY_FOG(i.fogCoord, col);
                 return col;
             }
-
-            
-           
-
-            
             ENDCG
         }
     }

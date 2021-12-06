@@ -1,3 +1,4 @@
+///光照
 Shader "CRLuo/Ramp_lighting"
 {
     Properties

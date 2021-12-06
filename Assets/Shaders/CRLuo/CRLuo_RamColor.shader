@@ -1,3 +1,4 @@
+///灰度上渐变色
 Shader "CRLuo/RamColor"
 {
     Properties

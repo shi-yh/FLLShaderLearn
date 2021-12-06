@@ -1,3 +1,4 @@
+///剔除透明和混合透明的光照
 Shader "CRLuo/CRLuo_Transparent_Cutoff"
 {
     Properties
