@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: FaceRatioPhong
-  m_Shader: {fileID: 4800000, guid: 4fc3623556bb32948aab725cac299738, type: 3}
+  m_Name: FaceRatio_FBColor
+  m_Shader: {fileID: 4800000, guid: 369cb1cd5db48a045b89bf2d8ea26d43, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 0be5aa216d697b745879bd605acb4a20, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -57,17 +57,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _BumpScale: 1
-    - _CenterRange: 7
-    - _CentreRange: 7
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EdgeLightIntensity: 1.53
-    - _EdgeLightRange: 1.3
-    - _EdgeLigthIntensity: 1.34
-    - _EdgeLigthRange: 0.43
-    - _FresnelMax: 0.39
-    - _FresnelMin: 0.1
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
@@ -77,21 +69,16 @@ Material:
     - _Parallax: 0.02
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularIntensity: 4.6
-    - _SpecularRange: 9.5
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
-    - _specularIntensity: 4.6
-    - _specularRange: 9.5
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _ColorCenter: {r: 0.42352945, g: 0.30980393, b: 0.23137257, a: 1}
-    - _ColorCentre: {r: 0.43921572, g: 0.3137255, b: 0.21960786, a: 1}
-    - _ColorEdge: {r: 0, g: 0, b: 0, a: 1}
-    - _EdgeLightColor: {r: 0.23349059, g: 0.28763333, b: 0.31132078, a: 1}
-    - _EdgeLigthColor: {r: 0.40784317, g: 0.5254902, b: 0.5921569, a: 1}
+    - _ColorH_B: {r: 1, g: 1, b: 0, a: 0}
+    - _ColorH_F: {r: 1, g: 1, b: 0, a: 0}
+    - _ColorL_B: {r: 0, g: 0, b: 0, a: 0}
+    - _ColorL_F: {r: 0, g: 0, b: 0, a: 0}
+    - _ColorM_B: {r: 1, g: 0.62562156, b: 0, a: 0}
+    - _ColorM_F: {r: 0, g: 1, b: 0, a: 0}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _SpecularColor: {r: 1, g: 1, b: 1, a: 1}
-    - _specularColor: {r: 1, g: 1, b: 1, a: 1}
   m_BuildTextureStacks: []

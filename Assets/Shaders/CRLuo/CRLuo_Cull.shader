@@ -50,7 +50,7 @@ Shader "CRLuo/Cull"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed4 _ColorH;
+            fixed4 _ColorH_F;
             fixed4 _ColorL;
             fixed4 _ColorM;
 
@@ -61,7 +61,7 @@ Shader "CRLuo/Cull"
 
                 fixed3 colorLow=lerp(_ColorL,_ColorM,saturate(gray*2));
 
-                fixed3 colorHigh = lerp(_ColorM,_ColorH,saturate((gray-0.5)*2));
+                fixed3 colorHigh = lerp(_ColorM,_ColorH_F,saturate((gray-0.5)*2));
 
                 col.rgb=lerp(colorLow,colorHigh,gray);
                 return col;
