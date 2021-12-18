@@ -39,13 +39,15 @@ Shader "FLL/FLL_NormalMapInTangentSpace"
                 float3 normal:NORMAL;
                 ///切线方向
                 float4 tangent:TANGENT;
-                ///Unity会将模型的第一组纹理存储到该变量中
+                ///这次输入了两组纹理
                 float4 texcoord:TEXCOORD0;
             };
 
             struct v2f
             {
                 float4 pos:SV_POSITION;
+
+                ///每一组纹理会占用float2
                 float4 uv:TEXCOORD0;
                 float3 lightDir:TEXCOORD1;
                 float3 viewDir:TEXCOORD2;
@@ -78,41 +80,41 @@ Shader "FLL/FLL_NormalMapInTangentSpace"
 
                 o.uv.zw = v.texcoord.xy * _BumpMap_ST.xy + _BumpMap_ST.zw;
 
-
-                
-                // o.lightDir = mul(TANGENT_SPACE_ROTATION,ObjSpaceLightDir(v.vertex)).xyz;
-                //
-                //
-                // o.worldNormal = UnityObjectToWorldNormal(v.normal);
-                //
-                // o.worldPos = UnityObjectToWorldDir(v.vertex);
-                //
-                // o.uv = TRANSFORM_TEX(v.texcoord, _MainTex);
-
+                ///副切线，因为和切线与法线方向都垂直的方向有两个，w决定使用哪个方向
+                float3 binormal = cross(normalize(v.normal),normalize(v.tangent.xyz))*v.tangent.w;
+                ///使用模型空间下切线方向，副切线方向和法线方向得到从模型空间到切线空间的变换矩阵
+                float3x3 rotation = float3x3(v.tangent.xyz,binormal,v.normal);
+                o.lightDir = mul(rotation,ObjSpaceLightDir(v.vertex)).xyz;
+                o.viewDir = mul(rotation,ObjSpaceViewDir(v.vertex));
+        
                 return o;
             }
 
             fixed4 frag(v2f i) : SV_Target
             {
+                fixed3 tangentLightDir = normalize(i.lightDir);
+
+                fixed3 tangentViewDir = normalize(i.viewDir);
+
+                fixed4 packedNormal = tex2D(_BumpMap,i.uv.zw);
+
+                ///法线纹理存储的是法线经过映射后的像素值，所以需要映射回来
+                fixed3 tangetNormal = UnpackNormal(packedNormal);
+
+                tangetNormal.xy *= _BumpScale;
+
+                tangetNormal.z = sqrt(1.0-saturate(dot(tangetNormal.xy,tangetNormal.xy)));
+
                 fixed3 albedo = tex2D(_MainTex, i.uv).rgb * _Color.rgb;
 
                 fixed3 ambient = UNITY_LIGHTMODEL_AMBIENT.xyz * albedo;
-                //
-                // fixed3 worldNormal = normalize(i.worldNormal);
-                //
-                // fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
-                //
-                // fixed3 diffuse = _LightColor0.rgb * albedo.rgb * saturate(dot(worldNormal, worldLightDir));
-                //
-                // fixed3 viewDir = normalize(UnityWorldSpaceViewDir(i.worldPos));
 
-                // fixed3 halfDir = normalize(worldLightDir + viewDir);
-                //
-                // fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(max(0, (dot(worldNormal, halfDir))), _Gloss);
-                //
-                // return fixed4(ambient + diffuse + specular, 1.0);
+                fixed3 diffuse=_LightColor0.rgb*albedo*max(0,dot(tangetNormal,tangentLightDir));
 
-                return fixed4(1,1,1,1);
+                fixed3 halfDir = normalize(tangentLightDir+tangentViewDir);
+                fixed3 specular = _LightColor0.rgb*_Specular.rgb*pow(max(0,dot(tangetNormal,halfDir)),_Gloss);
+                
+                return fixed4(ambient+diffuse+specular,1);
             }
             ENDCG
         }
