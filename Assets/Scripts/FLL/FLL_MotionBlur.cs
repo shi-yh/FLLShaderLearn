@@ -28,6 +28,8 @@ public class FLL_MotionBlur : FLL_PostEffetctBase
         DestroyImmediate(accmulationTexture);
     }
 
+
+    
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
     {
         if (material != null)
