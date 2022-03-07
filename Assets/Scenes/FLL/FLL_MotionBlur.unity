@@ -331,6 +331,7 @@ GameObject:
   - component: {fileID: 1443024043}
   - component: {fileID: 1443024044}
   - component: {fileID: 1443024045}
+  - component: {fileID: 1443024046}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -411,14 +412,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1443024039}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d69a2855cdb45754a9f54b021ec07c4a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 10
-  startPoint: {x: -5, y: 1, z: -10}
-  endPoint: {x: 5, y: 1, z: -10}
+  startPoint: {x: 0, y: 5, z: -10}
+  endPoint: {x: 0, y: -5, z: -10}
   lookAt: {x: 0, y: 0, z: 0}
   pingpong: 1
 --- !u!114 &1443024044
@@ -442,13 +443,30 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1443024039}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8f095be7239a876438f4c27e0d16f73b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   motionBlurShader: {fileID: 4800000, guid: 746ba089b70ca824f9ab2daa5c35db00, type: 3}
   blurSize: 0.044
+--- !u!114 &1443024046
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1443024039}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a8106c9a2d6fe9641984d82f447a4cd7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  fogShader: {fileID: 4800000, guid: 209d83ca08e773849b992275317efe1e, type: 3}
+  fogDensity: 0.52
+  fogColor: {r: 1, g: 0.8254717, b: 0.8254717, a: 1}
+  fogStart: 0
+  fogEnd: 10
 --- !u!1 &1647311905
 GameObject:
   m_ObjectHideFlags: 0

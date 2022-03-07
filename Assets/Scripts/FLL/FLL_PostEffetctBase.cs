@@ -37,12 +37,7 @@ public class FLL_PostEffetctBase : MonoBehaviour
     {
         CheckResource();
     }
-
-    private void OnEnable()
-    {
-       
-    }
-
+    
     protected Material CheckShaderAndCreateMaterial(Shader shader, Material material)
     {
         if (shader == null)
