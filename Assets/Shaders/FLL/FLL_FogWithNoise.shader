@@ -1,29 +1,44 @@
-Shader "FLL/FLL_FogWithDepthTexture"
+Shader "FLL/FLL_FogWithNoise"
 {
     Properties
     {
         _MainTex ("Texture", 2D) = "white" {}
         _FogDensity("Fog Density",Float) = 1.0
-        _FogColor("Fog Color",Color) = (1,1,1,1)
+        _FogColor("Fog Color",Color) =(1,1,1,1)
         _FogStart("Fog Start",Float) = 0.0
         _FogEnd("Fog End",Float)=1.0
+        _NoiseTex("Noise Texture",2D) = "white"{}
+        _FogXSpeed("Fog Horizontal Speed",Float) =0.1
+        _FogYSpeed("Fog Vertical Speed",Float)=0.1
+        _NoiseAmount("Noise Amount",Float) =1
+
     }
     SubShader
     {
-       
+        Tags
+        {
+            "RenderType"="Opaque"
+        }
+        LOD 100
+
         CGINCLUDE
         #include "UnityCG.cginc"
-
 
         float4x4 _FrustumCornersRay;
 
         sampler2D _MainTex;
+        float4 _MainTex_ST;
+
         half4 _MainTex_TexelSize;
         sampler2D _CameraDepthTexture;
         half _FogDensity;
         fixed4 _FogColor;
         float _FogStart;
         float _FogEnd;
+        sampler2D _NoiseTex;
+        half _FogXSpeed;
+        half _FogYSpeed;
+        half _NoiseAmount;
 
         struct v2f
         {
@@ -82,18 +97,21 @@ Shader "FLL/FLL_FogWithDepthTexture"
 
         fixed4 frag(v2f i):SV_Target
         {
-            ///得到视角空间下的线性深度
-            float linerDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));
-            
-            float3 worldPos = _WorldSpaceCameraPos+linerDepth*i.interpolatedRay.xyz;
+            ///根据深度纹理重建该图像在世界空间中的位置
+            float linearDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture,i.uv_depth));
+            float3 worldPos = _WorldSpaceCameraPos+linearDepth*i.interpolatedRay.xyz;
 
-            float fogDensity = (_FogEnd-worldPos.y)/(_FogEnd-_FogStart);
+            ///计算噪声纹理偏移量，-0.5后值范围在-0.5~0.5之间
+            float2 speed = _Time.y*float2(_FogXSpeed,_FogYSpeed);
+            float noise  = (tex2D(_NoiseTex,i.uv+speed).r-0.5)*_NoiseAmount;
 
-            fogDensity = saturate(fogDensity*_FogDensity);
+            float fogDensity = (_FogEnd - worldPos.y)/(_FogEnd-_FogStart);
+
+            fogDensity = saturate(fogDensity*_FogDensity*(1+noise));
 
             fixed4 finalColor = tex2D(_MainTex,i.uv);
 
-             finalColor.rgb = lerp(finalColor.rgb,_FogColor.rgb,fogDensity);
+            finalColor.rgb = lerp(finalColor.rgb,_FogColor.rgb,fogDensity);
 
             return finalColor;
             
@@ -103,18 +121,11 @@ Shader "FLL/FLL_FogWithDepthTexture"
 
 
 
-
-
-
         Pass
         {
-            ZTest Always
-            Cull Off
-            ZWrite Off
             CGPROGRAM
             #pragma vertex vert
-            #pragma fragment frag
-           
+            #pragma fragment frag 
             ENDCG
         }
     }
